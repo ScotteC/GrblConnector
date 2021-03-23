@@ -11,32 +11,34 @@
 
 #include "gsender.hpp"
 
-class GDumper : public GSender {
-public:
-    explicit GDumper(std::ostream *stream) {
-        this->stream = stream;
-    }
+namespace grblconnector {
 
-    bool SendCommand(std::string cmd) override {
-        *stream << cmd << std::endl;
-        return true;
-    }
+    class GDumper : public GSender {
+    public:
+        explicit GDumper(std::ostream *stream) {
+            this->stream = stream;
+        }
 
-    bool SendCommand(std::list<std::string> *cmd_list) override{
-        for (auto &cmd : *cmd_list)
+        bool SendCommand(std::string cmd) override {
             *stream << cmd << std::endl;
-        return true;
-    }
+            return true;
+        }
 
-    bool SendRealtimeCommand(const char cmd) override {
-        *stream << cmd << std::endl;
-        return true;
-    }
+        bool SendCommand(std::list<std::string> *cmd_list) override {
+            for (auto &cmd : *cmd_list)
+                *stream << cmd << std::endl;
+            return true;
+        }
 
-private:
-    std::ostream *stream;
+        bool SendRealtimeCommand(const char cmd) override {
+            *stream << cmd << std::endl;
+            return true;
+        }
 
+    private:
+        std::ostream *stream;
+    };
 
-};
+}
 
 #endif // GRBL_GDUMPER_HPP
