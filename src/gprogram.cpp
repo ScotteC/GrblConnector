@@ -125,7 +125,7 @@ namespace grblconnector {
 
     GProgram GProgram::Dwell(float seconds) {
         if (seconds > 0)
-            program.push_back("G4 " + std::to_string(seconds));
+            program.push_back("G4 P" + std::to_string(seconds));
         return *this;
     }
 
