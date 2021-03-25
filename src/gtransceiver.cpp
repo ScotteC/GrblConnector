@@ -60,7 +60,7 @@ namespace grblconnector {
         return false;
     }
 
-    bool GTransceiver::SendCommand(std::list<std::string> &cmd_list) {
+    bool GTransceiver::SendCommand(std::list<std::string> cmd_list) {
         if (io_run and !io_clear and status != down) {
             std::lock_guard<std::mutex> l(command_buffer_mutex);
             command_buffer.splice(command_buffer.end(), cmd_list);

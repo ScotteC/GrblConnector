@@ -11,7 +11,7 @@ namespace grblconnector {
     public:
         virtual bool SendCommand(std::string cmd) = 0;
 
-        virtual bool SendCommand(std::list<std::string> &cmd_list) = 0;
+        virtual bool SendCommand(std::list<std::string> cmd_list) = 0;
 
         virtual bool SendRealtimeCommand(char cmd) = 0;
     };

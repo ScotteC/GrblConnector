@@ -39,7 +39,7 @@ namespace grblconnector {
 
         bool SendCommand(std::string cmd) override;
 
-        bool SendCommand(std::list<std::string> &cmd_list) override;
+        bool SendCommand(std::list<std::string> cmd_list) override;
 
         bool SendRealtimeCommand(char cmd) override;
 
