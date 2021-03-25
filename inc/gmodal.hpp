@@ -54,6 +54,7 @@ namespace grblconnector {
         };
 
         enum UNIT {
+            unit_none,
             unit_inch = 20,
             unit_mm = 21
         };
@@ -67,16 +68,17 @@ namespace grblconnector {
         };
 
         enum FEED {
+            feed_none,
             feed_inverse_time = 93,
             feed_units_per_minute = 94
         };
 
         GModal::MOTION motion{GModal::motion_none};
-        GModal::WCS wcs{GModal::wcs_1};
-        GModal::PLANE plane{GModal::plane_xy};
-        GModal::UNIT unit{GModal::unit_mm};
-        GModal::DISTANCE distance{GModal::distance_absolute};
-        GModal::FEED feed{GModal::feed_units_per_minute};
+        GModal::WCS wcs{GModal::wcs_none};
+        GModal::PLANE plane{GModal::plane_none};
+        GModal::UNIT unit{GModal::unit_none};
+        GModal::DISTANCE distance{GModal::distance_none};
+        GModal::FEED feed{GModal::feed_none};
         GModal::PROGRAM program{GModal::program_none};
         GModal::SPINDLE spindle{GModal::spindle_off};
         GModal::COOLANT coolant{GModal::coolant_off};
