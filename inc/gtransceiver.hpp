@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <boost/signals2.hpp>
 
 #include "AsyncSerial.hpp"
 
@@ -47,6 +48,8 @@ namespace grblconnector {
 
         int ClineLen();
 
+        boost::signals2::signal<void()> sig;
+
     protected:
 
     private:
@@ -61,6 +64,8 @@ namespace grblconnector {
         STATUS status = down;
 
         CallbackAsyncSerial *serial{};
+
+        bool sigFlag = true;
 
         std::mutex command_buffer_mutex;
         std::mutex rt_command_buffer_mutex;

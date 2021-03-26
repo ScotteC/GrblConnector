@@ -55,6 +55,7 @@ namespace grblconnector {
         if (io_run and !io_clear and status != down) {
             std::lock_guard<std::mutex> l(command_buffer_mutex);
             command_buffer.push_back(cmd);
+            sigFlag = true;
             return true;
         }
         return false;
@@ -64,6 +65,7 @@ namespace grblconnector {
         if (io_run and !io_clear and status != down) {
             std::lock_guard<std::mutex> l(command_buffer_mutex);
             command_buffer.splice(command_buffer.end(), cmd_list);
+            sigFlag = true;
             return true;
         }
         return false;
@@ -137,6 +139,12 @@ namespace grblconnector {
                 serial->write(tosend.c_str(), tosend.length());
                 tosend.clear();
             }
+
+            if (command_buffer.empty() and sigFlag) {
+                sigFlag = false;
+                sig();
+            }
+
             std::this_thread::sleep_for(std::chrono::microseconds(10));
         }
         status = down;

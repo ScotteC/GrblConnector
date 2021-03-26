@@ -81,6 +81,8 @@ namespace grblconnector {
         std::list<int> alarms;
         bool message{};
         std::list<std::string> messages;
+
+
     };
 }
 #endif // GSTATUS_HPP
