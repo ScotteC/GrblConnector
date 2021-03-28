@@ -25,6 +25,7 @@ namespace grblconnector {
         try {
 //        delete serial;
             this->serial = new CallbackAsyncSerial(device, baudrate);
+            this->serial->flush();
             this->serial->setCallback([this](auto &&PH1, auto &&PH2) {
                 IOReceive(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
             });
