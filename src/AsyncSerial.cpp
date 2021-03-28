@@ -134,6 +134,12 @@ void AsyncSerial::close()
     }
 }
 
+void AsyncSerial::flush()
+{
+    if(!isOpen()) return;
+    ::tcflush(pimpl->port.lowest_layer().native_handle(), TCIOFLUSH);
+}
+
 void AsyncSerial::write(const char *data, size_t size)
 {
     {

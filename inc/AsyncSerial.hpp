@@ -92,6 +92,8 @@ public:
      */
     void close();
 
+    void flush();
+
     /**
      * Write data asynchronously. Returns immediately.
      * \param data array of char to be sent through the serial device
