@@ -11,12 +11,10 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include <boost/signals2.hpp>
 
 #include "AsyncSerial.hpp"
-
-#include "gstatus.hpp"
 #include "gsender.hpp"
+#include "gparser.hpp"
 
 namespace grblconnector {
 
@@ -36,7 +34,11 @@ namespace grblconnector {
 
         void Disconnect();
 
-        STATUS GetState() { return this->status; }
+        void BindBufferEmptyCallback(const std::function<void (void)> &callback) {
+            callback_command_buffer_empty = callback;
+        }
+
+        STATUS GetStatus() { return this->status; }
 
         bool SendCommand(std::string cmd) override;
 
@@ -48,7 +50,9 @@ namespace grblconnector {
 
         int ClineLen();
 
-        boost::signals2::signal<void()> sig;
+        const GParser& GetInterpreter(){
+            return gInterpreter;
+        }
 
     protected:
 
@@ -65,7 +69,7 @@ namespace grblconnector {
 
         CallbackAsyncSerial *serial{};
 
-        bool sigFlag = true;
+        std::mutex command_buffer_mutex{};
 
         std::mutex command_buffer_mutex;
         std::mutex rt_command_buffer_mutex;
@@ -80,6 +84,9 @@ namespace grblconnector {
         std::atomic<bool> io_run{}, io_clear{};
 
         GStatus *gStatus;
+
+        std::function<void (void)> callback_command_buffer_empty = {};
+        bool command_buffer_empty_call_flag = true;
     };
 }
 #endif // GTRANSCEIVER_HPP
