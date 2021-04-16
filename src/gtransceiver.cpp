@@ -161,40 +161,25 @@ namespace grblconnector {
         std::vector<char> v(data, data + len);
         for (auto const &c : v) {
             if (c == '\n') {
-                ParseLine(read_buffer);
+                switch (gInterpreter.ParseLine(read_buffer)) {
+                    case 1:
+                        if (!cline.empty()) {
+                            std::unique_lock<std::mutex> l(cline_mutex);
+                            cline.pop_front();
+                        }
+                        break;
+
+                    case 2:
+                        cline.clear();
+                        break;
+
+                    default:
+                        break;
+                }
                 read_buffer.clear();
             } else {
                 read_buffer += c;
             }
         }
     }
-
-    void GTransceiver::ParseLine(std::string &line) {
-        if (line.find("ok") != std::string::npos) {
-            if (!cline.empty()) {
-                std::unique_lock<std::mutex> l(cline_mutex);
-                cline.pop_front();
-            }
-        } else if (line.find("Grbl") != std::string::npos) {
-            std::unique_lock<std::mutex> l(cline_mutex);
-            cline.clear();
-        } else if (line.find("error") != std::string::npos) {
-            std::cout << "ERROR " << line;
-            if (!cline.empty()) {
-                std::unique_lock<std::mutex> l(cline_mutex);
-                cline.pop_front();
-            }
-            gStatus->ParseError(line);
-        } else if (line.find("ALARM") != std::string::npos) {
-            std::cout << "ALARM " << line;
-            if (!cline.empty()) {
-                std::unique_lock<std::mutex> l(cline_mutex);
-                cline.pop_front();
-            }
-            gStatus->ParseAlarm(line);
-        } else {
-            gStatus->ParseLine(read_buffer);
-        }
-    }
-
 }

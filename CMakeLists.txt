@@ -14,7 +14,7 @@ include(GNUInstallDirs)
 set(SOURCE_FILES
         src/AsyncSerial.cpp
         src/gprogram.cpp
-        src/gstatus.cpp
+    src/gparser.cpp
         src/gtransceiver.cpp
         src/grblconnector.cpp
         )
@@ -24,10 +24,13 @@ set(HEADER_FILES
         inc/gcommand.hpp
         inc/gdumper.hpp
         inc/gmodal.hpp
+        inc/gstatus.hpp
+        inc/gerror.hpp
+        inc/galarm.hpp
         inc/gprogram.hpp
         inc/grblconnector.hpp
         inc/gsender.hpp
-        inc/gstatus.hpp
+    inc/gparser.hpp
         inc/gtransceiver.hpp
         )
 

@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE gstatus
 #include <boost/test/unit_test.hpp>
 
-#include "../inc/gstatus.hpp"
+#include "../inc/gparser.hpp"
 
 //BOOST_AUTO_TEST_SUITE( GSTATUS )
 
@@ -9,7 +9,7 @@ using namespace grblconnector;
 
 BOOST_AUTO_TEST_CASE(gstatus_parse_modal_state)
 {
-    GStatus gStatus;
+    GParser gStatus;
 
     std::string line = "[GC:G1 G55 G18 G20 G91 G93 M4 M8 T1 F10 S10000]";
 
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(gstatus_parse_modal_state)
 
 BOOST_AUTO_TEST_CASE(gstatus_parse_status_report)
 {
-    GStatus gStatus;
+    GParser gStatus;
 
     std::string line = "[GC:G1 G55 G18 G20 G91 G93 M4 M8 T1 F10 S10000]";
 
