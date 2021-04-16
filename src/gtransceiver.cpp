@@ -10,8 +10,7 @@
 
 namespace grblconnector {
 
-    GTransceiver::GTransceiver(GStatus *gStatus) {
-        this->gStatus = gStatus;
+    GTransceiver::GTransceiver() {
         this->io_run = false;
         this->io_clear = false;
     }
@@ -104,7 +103,7 @@ namespace grblconnector {
         command_buffer.clear();
         rt_command_buffer.clear();
         cline.clear();
-        std::string tosend;
+        std::string to_send;
         status = active;
 
         while (io_run and serial->isOpen() and !serial->errorStatus()) {
@@ -117,28 +116,28 @@ namespace grblconnector {
                 serial->write(&rt_cmd, 1);
             }
 
-            if (tosend.empty() and !command_buffer.empty() and !io_clear) {
+            if (to_send.empty() and !command_buffer.empty() and !io_clear) {
                 command_buffer_mutex.lock();
-                tosend = command_buffer.front();
+                to_send = command_buffer.front();
                 command_buffer.pop_front();
                 command_buffer_mutex.unlock();
-                if (!tosend.empty()) {
-                    if (tosend.back() != '\n')
-                        tosend += '\n';
-                    std::transform(tosend.begin(), tosend.end(), tosend.begin(), ::toupper);
+                if (!to_send.empty()) {
+                    if (to_send.back() != '\n')
+                        to_send += '\n';
+                    std::transform(to_send.begin(), to_send.end(), to_send.begin(), ::toupper);
                     std::unique_lock<std::mutex> l(cline_mutex);
-                    cline.push_back(static_cast<int>(tosend.length()));
+                    cline.push_back(static_cast<int>(to_send.length()));
                 }
             }
 
             if (io_clear) {
-                tosend.clear();
+                to_send.clear();
             }
 
             // send
-            if (!tosend.empty() and !io_clear and ClineLen() < RX_BUFFER_SIZE) {
-                serial->write(tosend.c_str(), tosend.length());
-                tosend.clear();
+            if (!to_send.empty() and !io_clear and ClineLen() < RX_BUFFER_SIZE) {
+                serial->write(to_send.c_str(), to_send.length());
+                to_send.clear();
             }
 
             if (command_buffer.empty() and command_buffer_empty_call_flag) {

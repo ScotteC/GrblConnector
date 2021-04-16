@@ -9,7 +9,7 @@
 #include <list>
 
 #include "gprogram.hpp"
-#include "gstatus.hpp"
+#include "gparser.hpp"
 #include "gcommand.hpp"
 #include "gtransceiver.hpp"
 
@@ -24,21 +24,23 @@ namespace grblconnector {
 
         void Disconnect();
 
-        bool is_runnable() const { return this->runnable; }
+        int SetProgram(GProgram &program);
 
-        int ProgramRun(std::list<std::string> &program);
+        int SetProgram(std::list<std::string> &program);
 
-        std::string ProgramStart();
+        GProgram GetProgram();
 
-        std::string ProgramPause();
+        int StartProgram(bool repeated);
 
-        void ProgramStop();
+        int PauseProgram();
+
+        void StopProgram();
 
         void GrblReset();
 
         void GrblUnlock();
 
-        void GrblHome();
+        int GrblHome();
 
         void GetGrblStatusReport();
 
@@ -49,15 +51,14 @@ namespace grblconnector {
         };
 
     public:
-        GStatus *gStatus;
-        GTransceiver *gTransceiver;
-        GCommand *gCommand;
+        GParser gInterpreter{};
+        GTransceiver gTransceiver{};
+        GCommand gCommand{gTransceiver};
 
     private:
-        MODE mode;
-        bool runnable, running;
+        MODE mode = none;
+        GProgram gProgram{};
     };
-
 }
 
 #endif //GRBL_CONTROLLER_HPP

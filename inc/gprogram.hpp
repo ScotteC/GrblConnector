@@ -17,7 +17,9 @@ namespace grblconnector {
 
     class GProgram {
     public:
-        GProgram() {};
+        GProgram() = default;
+
+        explicit GProgram(std::list<std::string> &program);
 
         void Reset();
 

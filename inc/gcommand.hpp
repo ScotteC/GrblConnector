@@ -17,7 +17,7 @@ namespace grblconnector {
 
     class GCommand {
     public:
-        explicit GCommand(GTransceiver *gTransceiver) {
+        explicit GCommand(GTransceiver &gTransceiver) {
             this->gTransceiver = gTransceiver;
         }
 
@@ -129,12 +129,11 @@ namespace grblconnector {
                 gTransceiver->SendCommand(cmd);
         }
 
-
         void RealtimeCommand(const char cmd) {
             gTransceiver->SendRealtimeCommand(cmd);
         }
 
-        GTransceiver *gTransceiver;
+        GTransceiver &gTransceiver;
     };
 
 }

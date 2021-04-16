@@ -26,7 +26,7 @@ namespace grblconnector {
             active
         };
 
-        explicit GTransceiver(GStatus *gStatus);
+        GTransceiver();
 
         ~GTransceiver();
 
@@ -61,8 +61,6 @@ namespace grblconnector {
 
         void IOReceive(const char *data, unsigned int len);
 
-        void ParseLine(std::string &line);
-
         const int RX_BUFFER_SIZE = 128;
 
         STATUS status = down;
@@ -70,23 +68,21 @@ namespace grblconnector {
         CallbackAsyncSerial *serial{};
 
         std::mutex command_buffer_mutex{};
-
-        std::mutex command_buffer_mutex;
-        std::mutex rt_command_buffer_mutex;
-        std::mutex cline_mutex;
+        std::mutex rt_command_buffer_mutex{};
+        std::mutex cline_mutex{};
         std::list<std::string> command_buffer{};
         std::list<char> rt_command_buffer{};
         std::list<int> cline{};
 
         std::string read_buffer{};
 
-        std::thread io_thread{};
+        std::thread io_thread{}, status_thread{};
         std::atomic<bool> io_run{}, io_clear{};
 
-        GStatus *gStatus;
+        GParser gInterpreter{};
 
         std::function<void (void)> callback_command_buffer_empty = {};
         bool command_buffer_empty_call_flag = true;
     };
 }
-#endif // GTRANSCEIVER_HPP
+#endif // GRBL_GTRANSCEIVER_HPP

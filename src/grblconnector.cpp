@@ -9,103 +9,99 @@
 namespace grblconnector {
 
     GrblConnector::GrblConnector() {
-        gStatus = new GStatus();
-        gTransceiver = new GTransceiver(gStatus);
-        gCommand = new GCommand(gTransceiver);
-
-        mode = none;
-
-        runnable = true;
-        running = false;
+//        gInterpreter = new GParser();
+//        gTransceiver = new GTransceiver(gInterpreter);
+//        gCommand = new GCommand(gTransceiver);
+//
+//        mode = none;
     }
 
     GrblConnector::~GrblConnector() {
         Disconnect();
-
-        runnable = false;
-
-        delete gCommand;
-        delete gTransceiver;
-        delete gStatus;
     }
 
     bool GrblConnector::Connect(const std::string &device, int baudrate) {
-        gTransceiver->Connect(device, baudrate);
-
-        gCommand->GetGCodeState();
+        gTransceiver.Connect(device, baudrate);
+        gCommand.GetGCodeState();
         return true;
     }
 
-
     void GrblConnector::Disconnect() {
-        gCommand->RtSoftReset();
-        gTransceiver->Disconnect();
+        gCommand.RtSoftReset();
+        gTransceiver.Disconnect();
     }
 
-    int GrblConnector::ProgramRun(std::list<std::string> &program) {
-        if (this->gStatus->GetState() == GStatus::Hold_0) {
-            this->gCommand->RtCycleStart();
-            return 0;
-        } else if (this->gStatus->GetState() == GStatus::Run) {
-            return 1;
-        } else if (this->gTransceiver->GetState() != GTransceiver::active) {
-            return 2;
-        }
-
-        this->gTransceiver->SendCommand(program);
+    int GrblConnector::SetProgram(GProgram &program) {
+        gProgram = program;
         return 0;
     }
 
-    std::string GrblConnector::ProgramStart() {
-        if (this->gStatus->GetState() == GStatus::Hold_0) {
-            this->gCommand->RtCycleStart();
-            return "Programm wird fortgesetzt...";
-        } else if (this->gStatus->GetState() == GStatus::Run) {
-            return "Programm läuft bereits";
-        } else if (this->gTransceiver->GetState() != GTransceiver::active) {
-            return "GRBL nicht verbunden";
-        } else if (!this->runnable) {
-            return "Maschine gesperrt";
-        } else if (this->mode != automatic) {
-            return "Maschine in Handbetrieb";
-        }
-
-        return "Unknown error";
+    int GrblConnector::SetProgram(std::list<std::string> &program) {
+        gProgram = GProgram(program);
+        return 0;
     }
 
-    std::string GrblConnector::ProgramPause() {
-        if (this->gStatus->GetState() == GStatus::Run) {
-            this->gCommand->RtFeedHold();
-            return "Programm pausiert";
+    GProgram GrblConnector::GetProgram() {
+        return gProgram;
+    }
+
+    int GrblConnector::StartProgram(bool repeated = false) {
+        if (this->gTransceiver.GetStatus() != GTransceiver::active) {
+            return 1;
+        }
+
+        if (this->mode != automatic) {
+            return 2;
+        }
+
+        if (this->gInterpreter.GetState() == GStatus::STATE::Hold_0) {
+            this->gCommand.RtCycleStart();
+            return 3;
+        }
+
+        if (!repeated && this->gInterpreter.GetState() == GStatus::STATE::Run) {
+            return 4;
+        }
+
+        this->gTransceiver.SendCommand(gProgram.GetGCode());
+        return 0;
+    }
+
+    int GrblConnector::PauseProgram() {
+        if (this->gInterpreter.GetState() == GStatus::STATE::Run) {
+            this->gCommand.RtFeedHold();
+            return 0;
         } else {
-            return "Kein laufendes Programm";
+            return 1;
         }
     }
 
-    void GrblConnector::ProgramStop() {
-        this->ProgramPause();
+    void GrblConnector::StopProgram() {
+        this->PauseProgram();
         std::this_thread::sleep_for(std::chrono::seconds(1));
         this->GrblReset();
     }
 
     void GrblConnector::GetGrblStatusReport() {
-        if (this->gTransceiver->GetState() == GTransceiver::active)
-            this->gCommand->RtStatusReport();
+        if (this->gTransceiver.GetStatus() == GTransceiver::active)
+            this->gCommand.RtStatusReport();
     }
 
     void GrblConnector::GrblReset() {
-        gTransceiver->ClearBuffer();
-        gCommand->RtSoftReset();
-        running = false;
+        gTransceiver.ClearBuffer();
+        gCommand.RtSoftReset();
     }
 
     void GrblConnector::GrblUnlock() {
-        gCommand->KillAlarm();
+        gCommand.KillAlarm();
     }
 
-    void GrblConnector::GrblHome() {
-        if (runnable)
-            gCommand->HomingCylce();
+    int GrblConnector::GrblHome() {
+        if (this->gTransceiver.GetStatus() != GTransceiver::active) {
+            return 1;
+        }
+        gCommand.HomingCylce();
+        return 0;
     }
 
 }

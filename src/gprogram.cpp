@@ -7,6 +7,11 @@
 #include <sstream>
 #include <iomanip>
 namespace grblconnector {
+    GProgram::GProgram(std::list<std::string> &program) {
+        Reset();
+        this->program = program;
+    }
+
     void GProgram::Reset() {
         modal = GModal();
         program.clear();
