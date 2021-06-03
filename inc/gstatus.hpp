@@ -25,8 +25,10 @@
 #ifndef GRBL_GSTATUS_HPP
 #define GRBL_GSTATUS_HPP
 
-#include <map>
 #include "gmodal.hpp"
+
+#include <string>
+#include <map>
 
 namespace grblconnector {
 
@@ -44,9 +46,6 @@ class GStatus {
         Home,
         Sleep
     };
-
-    GStatus() = default;
-
 
     GStatus::STATE state{};
     std::map<std::string, STATE> str_to_state = {

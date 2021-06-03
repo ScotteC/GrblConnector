@@ -30,6 +30,9 @@
 namespace grblconnector {
 
     int GParser::ParseLine(std::string &line) {
+        if (boost::regex_match(line, boost::regex{"Grbl"}))
+            return 2;
+
         if (boost::regex_match(line, boost::regex{"ok"}))
             return 1;
 
@@ -38,9 +41,6 @@ namespace grblconnector {
 
         if (ParseError(line))
             return 1;
-
-        if (boost::regex_match(line, boost::regex{"Grbl"}))
-            return 2;
 
         if (ParseStatusReport(line))
             return 0;

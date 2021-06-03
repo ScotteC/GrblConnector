@@ -42,7 +42,7 @@ namespace grblconnector {
 
     int GTransceiver::Connect(const std::string &device, unsigned int baudrate) {
         try {
-//        delete serial;
+//            delete serial;
             this->serial = new CallbackAsyncSerial(device, baudrate);
             this->serial->flush();
             this->serial->setCallback([this](auto &&PH1, auto &&PH2) {
@@ -111,11 +111,16 @@ namespace grblconnector {
         io_clear = false;
     }
 
-    void GTransceiver::IOTransmit() {
+    int GTransceiver::ClineLen() {
+        std::unique_lock<std::mutex> l(cline_mutex);
+        return std::accumulate(cline.begin(), cline.end(), 0);
+    }
 
-        if (serial->errorStatus() || !serial->isOpen()) {
+    void GTransceiver::IOTransmit() {
+        if (serial == nullptr or serial->errorStatus() or !serial->isOpen()) {
             std::cout << "ERROR: Serial port closed" << std::endl;
             status = down;
+            return;
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -129,7 +134,8 @@ namespace grblconnector {
         status = active;
         callback_status_changed(status);
 
-        while (io_run and serial->isOpen() and !serial->errorStatus()) {
+        // start thread for cyclic status requests
+        while (io_run and serial != nullptr and serial->isOpen() and !serial->errorStatus()) {
             //process realtime command buffer
             if (!rt_command_buffer.empty()) {
                 rt_command_buffer_mutex.lock();
@@ -170,21 +176,17 @@ namespace grblconnector {
 
             std::this_thread::sleep_for(std::chrono::microseconds(10));
         }
+        io_run = false;
         status = down;
         callback_status_changed(status);
         std::cout << "SerialWorker stopped" << std::endl;
-    }
-
-    int GTransceiver::ClineLen() {
-        std::unique_lock<std::mutex> l(cline_mutex);
-        return std::accumulate(cline.begin(), cline.end(), 0);
     }
 
     void GTransceiver::IOReceive(const char *data, unsigned int len) {
         std::vector<char> v(data, data + len);
         for (auto const &c : v) {
             if (c == '\n') {
-                switch (gInterpreter.ParseLine(read_buffer)) {
+                switch (gParser.ParseLine(read_buffer)) {
                     case 1:
                         if (!cline.empty()) {
                             std::unique_lock<std::mutex> l(cline_mutex);
