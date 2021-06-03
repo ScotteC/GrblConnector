@@ -37,12 +37,8 @@ namespace grblconnector {
 
     class GCommand {
     public:
-        explicit GCommand(GTransceiver &gTransceiver) {
-            this->gTransceiver = gTransceiver;
-        }
-
         // Commands executed in program buffer
-        void HomingCylce(std::list<std::string> *queue = nullptr) {
+        void HomingCycle(std::list<std::string> *queue = nullptr) {
             Command("$H", queue);
         }
 
@@ -86,6 +82,7 @@ namespace grblconnector {
 
         // Commands executed by realtime buffer
         void RtSoftReset() {
+            gTransceiver.ClearBuffer();
             RealtimeCommand(static_cast<const char>(0x18));
         }
 
@@ -142,18 +139,22 @@ namespace grblconnector {
         }
 
     private:
+        friend class GrblConnector;
+
+        explicit GCommand(GTransceiver &gTransceiver) : gTransceiver(gTransceiver) {}
+
         void Command(const std::string &cmd, std::list<std::string> *queue = nullptr) {
             if (queue != nullptr)
                 queue->push_back(cmd);
             else
-                gTransceiver->SendCommand(cmd);
+                gTransceiver.SendCommand(cmd);
         }
 
         void RealtimeCommand(const char cmd) {
-            gTransceiver->SendRealtimeCommand(cmd);
+            gTransceiver.SendRealtimeCommand(cmd);
         }
 
-        GTransceiver &gTransceiver;
+        GTransceiver& gTransceiver;
     };
 
 }

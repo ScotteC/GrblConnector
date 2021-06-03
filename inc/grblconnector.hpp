@@ -44,40 +44,22 @@ namespace grblconnector {
 
         void Disconnect();
 
-        int SetProgram(GProgram &program);
-
-        int SetProgram(std::list<std::string> &program);
-
-        GProgram GetProgram();
-
         int StartProgram(bool repeated);
 
         int PauseProgram();
 
-        void StopProgram();
-
-        void GrblReset();
-
-        void GrblUnlock();
-
-        int GrblHome();
-
-        void GetGrblStatusReport();
-
-        enum MODE {
-            none = -1,
-            automatic = 0,
-            hand = 1
-        };
+        int StopProgram();
 
     public:
-        GParser gInterpreter{};
-        GTransceiver gTransceiver{};
-        GCommand gCommand{gTransceiver};
-
-    private:
-        MODE mode = none;
+        GStatus status{};
+        GModal modal{};
+        GError error{};
+        GAlarm alarm{};
         GProgram gProgram{};
+
+        GParser gParser{status, modal, error, alarm};
+        GTransceiver gTransceiver{gParser};
+        GCommand gCommand{gTransceiver};
     };
 }
 

@@ -30,7 +30,7 @@
 
 namespace grblconnector {
 
-    GTransceiver::GTransceiver() {
+    GTransceiver::GTransceiver(GParser& parser) : gParser(parser) {
         this->io_run = false;
         this->io_clear = false;
     }

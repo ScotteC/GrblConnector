@@ -39,7 +39,8 @@ namespace grblconnector {
 
     class GParser {
     public:
-        GParser();
+        GParser(GParser&) = delete;
+        GParser& operator=(GParser&) = delete;
 
         void BindStatusCallback(std::function<void (GStatus)> &callback) {
             callback_status = callback;
@@ -61,6 +62,13 @@ namespace grblconnector {
             callback_message = callback;
         }
 
+    private:
+        friend class GrblConnector;
+        friend class GTransceiver;
+
+        GParser(GStatus &status, GModal &modal, GError &error, GAlarm &alarm)
+        : status(status), modal(modal), error(error), alarm(alarm) {}
+
         int ParseLine(std::string &line);
 
         bool ParseStatusReport(std::string &line);
@@ -75,22 +83,11 @@ namespace grblconnector {
 
         bool ParseMessage(std::string &line);
 
-        GStatus GetMachineStatus() {
-            return status;
-        }
-        GModal GetMachineModal() {
-            return modal;
-        }
-
-        GStatus::STATE GetState() {
-            return status.state;
-        }
-
     private:
-        GStatus status{};
-        GModal modal{};
-        GError error{};
-        GAlarm alarm{};
+        GStatus &status;
+        GModal &modal;
+        GError &error;
+        GAlarm &alarm;
 
         std::function<void (GStatus status)> callback_status = {};
         std::function<void (GModal modal)> callback_modal = {};

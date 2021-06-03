@@ -46,19 +46,28 @@ namespace grblconnector {
             active
         };
 
-        GTransceiver();
+        GTransceiver(GTransceiver&) = delete;
+        GTransceiver& operator=(GTransceiver&) = delete;
+
+        void BindStatusChangedCallback(const std::function<void(STATUS)> &callback) {
+            callback_status_changed.append(callback);
+        }
+
+        void BindBufferEmptyCallback(const std::function<void()> &callback) {
+            callback_command_buffer_empty.append(callback);
+        }
+
+    private:
+        friend class GrblConnector;
+        friend class GCommand;
+
+        explicit GTransceiver(GParser& parser);
 
         ~GTransceiver();
 
         int Connect(const std::string &device, unsigned int baudrate);
 
         void Disconnect();
-
-        void BindBufferEmptyCallback(const std::function<void (void)> &callback) {
-            callback_command_buffer_empty = callback;
-        }
-
-        STATUS GetStatus() { return this->status; }
 
         bool SendCommand(std::string cmd) override;
 
@@ -70,13 +79,6 @@ namespace grblconnector {
 
         int ClineLen();
 
-        const GParser& GetInterpreter(){
-            return gInterpreter;
-        }
-
-    protected:
-
-    private:
         void IOTransmit();
 
         void IOReceive(const char *data, unsigned int len);
@@ -85,6 +87,7 @@ namespace grblconnector {
 
         STATUS status = down;
 
+        GParser& gParser;
         CallbackAsyncSerial *serial{};
 
         std::mutex command_buffer_mutex{};
@@ -99,7 +102,7 @@ namespace grblconnector {
         std::thread io_thread{}, status_thread{};
         std::atomic<bool> io_run{}, io_clear{};
 
-        GParser gInterpreter{};
+        eventpp::CallbackList<void(STATUS)> callback_status_changed;
 
         std::function<void (void)> callback_command_buffer_empty = {};
         bool command_buffer_empty_call_flag = true;

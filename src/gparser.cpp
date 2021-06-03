@@ -28,7 +28,6 @@
 #include <boost/regex.hpp>
 
 namespace grblconnector {
-    GParser::GParser() = default;
 
     int GParser::ParseLine(std::string &line) {
         if (boost::regex_match(line, boost::regex{"ok"}))
