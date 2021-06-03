@@ -135,6 +135,8 @@ namespace grblconnector {
         callback_status_changed(status);
 
         // start thread for cyclic status requests
+        int status_counter = 0;
+
         while (io_run and serial != nullptr and serial->isOpen() and !serial->errorStatus()) {
             //process realtime command buffer
             if (!rt_command_buffer.empty()) {
@@ -172,6 +174,11 @@ namespace grblconnector {
             if (command_buffer.empty() and command_buffer_empty_call_flag) {
                 command_buffer_empty_call_flag = false;
                 callback_command_buffer_empty();
+            }
+
+            if(!io_clear and --status_counter < 0) {
+                status_counter = 20000;
+                SendRealtimeCommand(static_cast<const char>(0x3f));
             }
 
             std::this_thread::sleep_for(std::chrono::microseconds(10));
