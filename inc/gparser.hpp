@@ -29,6 +29,7 @@
 #include "gstatus.hpp"
 #include "gerror.hpp"
 #include "galarm.hpp"
+#include "eventpp/include/eventpp/callbacklist.h"
 
 #include <list>
 #include <map>
@@ -42,24 +43,24 @@ namespace grblconnector {
         GParser(GParser&) = delete;
         GParser& operator=(GParser&) = delete;
 
-        void BindStatusCallback(std::function<void (GStatus)> &callback) {
-            callback_status = callback;
+        void BindStatusCallback(const std::function<void(GStatus)> &callback) {
+            callback_status.append(callback);
         }
 
-        void BindModalCallback(std::function<void (GModal)> &callback) {
-            callback_modal = callback;
+        void BindModalCallback(const std::function<void(GModal)> &callback) {
+            callback_modal.append(callback);
         }
 
-        void BindErrorCallback(std::function<void (int, std::string)> &callback) {
-            callback_error = callback;
+        void BindErrorCallback(const std::function<void(int, std::string)> &callback) {
+            callback_error.append(callback);
         }
 
-        void BindAlarmCallback(std::function<void (int, std::string)> &callback) {
-            callback_alarm = callback;
+        void BindAlarmCallback(const std::function<void(int, std::string)> &callback) {
+            callback_alarm.append(callback);
         }
 
-        void BindMessageCallback(std::function<void (std::string)> &callback) {
-            callback_message = callback;
+        void BindMessageCallback(const std::function<void(std::string)> &callback) {
+            callback_message.append(callback);
         }
 
     private:
@@ -89,11 +90,11 @@ namespace grblconnector {
         GError &error;
         GAlarm &alarm;
 
-        std::function<void (GStatus status)> callback_status = {};
-        std::function<void (GModal modal)> callback_modal = {};
-        std::function<void (int error_code, std::string error_message)> callback_error = {};
-        std::function<void (int alarm_code, std::string alarm_message)> callback_alarm = {};
-        std::function<void (std::string message)> callback_message = {};
+        eventpp::CallbackList<void(GStatus)> callback_status;
+        eventpp::CallbackList<void(GModal)> callback_modal;
+        eventpp::CallbackList<void(int, std::string)> callback_error;
+        eventpp::CallbackList<void(int, std::string)> callback_alarm;
+        eventpp::CallbackList<void(std::string)> callback_message;
     };
 }
-#endif // GINTERPRETER_HPP
+#endif // GRBL_INTERPRETER_HPP

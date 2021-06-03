@@ -9,10 +9,12 @@ set(BOOST_LIBS system regex)
 find_package(Boost COMPONENTS ${BOOST_LIBS} REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+include_directories(lib)
+
 include(GNUInstallDirs)
 
 set(SOURCE_FILES
-        src/AsyncSerial.cpp
+        lib/asyncserial/AsyncSerial.cpp
         src/gprogram.cpp
         src/gparser.cpp
         src/gtransceiver.cpp
@@ -20,7 +22,6 @@ set(SOURCE_FILES
         )
 
 set(HEADER_FILES
-        inc/AsyncSerial.hpp
         inc/gcommand.hpp
         inc/gdumper.hpp
         inc/gmodal.hpp

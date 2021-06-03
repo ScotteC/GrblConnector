@@ -56,6 +56,7 @@ namespace grblconnector {
         status = up;
         io_run = true;
         io_thread = std::thread(&GTransceiver::IOTransmit, this);
+        callback_status_changed(status);
         return 0;
     }
 
@@ -68,6 +69,7 @@ namespace grblconnector {
         if (serial != nullptr)
             serial->close();
         status = down;
+        callback_status_changed(status);
         std::cout << "GTransceiver closed" << std::endl;
     }
 
@@ -125,6 +127,7 @@ namespace grblconnector {
         cline.clear();
         std::string to_send;
         status = active;
+        callback_status_changed(status);
 
         while (io_run and serial->isOpen() and !serial->errorStatus()) {
             //process realtime command buffer
@@ -168,6 +171,7 @@ namespace grblconnector {
             std::this_thread::sleep_for(std::chrono::microseconds(10));
         }
         status = down;
+        callback_status_changed(status);
         std::cout << "SerialWorker stopped" << std::endl;
     }
 

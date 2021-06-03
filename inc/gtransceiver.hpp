@@ -32,7 +32,8 @@
 #include <mutex>
 #include <atomic>
 
-#include "AsyncSerial.hpp"
+#include "eventpp/include/eventpp/callbacklist.h"
+#include "asyncserial/AsyncSerial.hpp"
 #include "gsender.hpp"
 #include "gparser.hpp"
 
@@ -103,8 +104,7 @@ namespace grblconnector {
         std::atomic<bool> io_run{}, io_clear{};
 
         eventpp::CallbackList<void(STATUS)> callback_status_changed;
-
-        std::function<void (void)> callback_command_buffer_empty = {};
+        eventpp::CallbackList<void()> callback_command_buffer_empty;
         bool command_buffer_empty_call_flag = true;
     };
 }
