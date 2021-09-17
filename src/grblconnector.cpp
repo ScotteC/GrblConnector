@@ -45,7 +45,7 @@ namespace grblconnector {
         gTransceiver.Disconnect();
     }
 
-    int GrblConnector::StartProgram(bool repeated = false) {
+    int GrblConnector::StartProgram(GProgram& program, bool repeated = false) {
         if (this->gTransceiver.status != GTransceiver::active) {
             return 1;
         }
@@ -63,8 +63,8 @@ namespace grblconnector {
             return 4;
         }
 
-        this->gTransceiver.SendCommand(gProgram.GetGCode());
-        return 0;
+        this->gTransceiver.SendCommand(program.GetGCode());
+        return 0 ;
     }
 
     int GrblConnector::PauseProgram() {

@@ -44,7 +44,7 @@ namespace grblconnector {
 
         void Disconnect();
 
-        int StartProgram(bool repeated);
+        int StartProgram(GProgram& program, bool repeated);
 
         int PauseProgram();
 
@@ -55,7 +55,6 @@ namespace grblconnector {
         GModal modal{};
         GError error{};
         GAlarm alarm{};
-        GProgram gProgram{};
 
         GParser gParser{status, modal, error, alarm};
         GTransceiver gTransceiver{gParser};
