@@ -29,7 +29,6 @@
 #include "gstatus.hpp"
 #include "gerror.hpp"
 #include "galarm.hpp"
-#include "eventpp/include/eventpp/callbacklist.h"
 
 #include <list>
 #include <map>
@@ -44,23 +43,23 @@ namespace grblconnector {
         GParser& operator=(GParser&) = delete;
 
         void BindStatusCallback(const std::function<void(GStatus)> &callback) {
-            callback_status.append(callback);
+            callback_status = callback;
         }
 
         void BindModalCallback(const std::function<void(GModal)> &callback) {
-            callback_modal.append(callback);
+            callback_modal = callback;
         }
 
         void BindErrorCallback(const std::function<void(int, std::string)> &callback) {
-            callback_error.append(callback);
+            callback_error = callback;
         }
 
         void BindAlarmCallback(const std::function<void(int, std::string)> &callback) {
-            callback_alarm.append(callback);
+            callback_alarm = callback;
         }
 
         void BindMessageCallback(const std::function<void(std::string)> &callback) {
-            callback_message.append(callback);
+            callback_message = callback;
         }
 
     private:
@@ -90,11 +89,11 @@ namespace grblconnector {
         GError &error;
         GAlarm &alarm;
 
-        eventpp::CallbackList<void(GStatus)> callback_status;
-        eventpp::CallbackList<void(GModal)> callback_modal;
-        eventpp::CallbackList<void(int, std::string)> callback_error;
-        eventpp::CallbackList<void(int, std::string)> callback_alarm;
-        eventpp::CallbackList<void(std::string)> callback_message;
+        std::function<void(GStatus)> callback_status = nullptr;
+        std::function<void(GModal)> callback_modal = nullptr;
+        std::function<void(int, std::string)> callback_error = nullptr;
+        std::function<void(int, std::string)> callback_alarm = nullptr;
+        std::function<void(std::string)> callback_message = nullptr;
     };
 }
 #endif // GRBL_INTERPRETER_HPP

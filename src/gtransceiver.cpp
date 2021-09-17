@@ -56,7 +56,8 @@ namespace grblconnector {
         status = up;
         io_run = true;
         io_thread = std::thread(&GTransceiver::IOTransmit, this);
-        callback_status_changed(status);
+        if (callback_status_changed != nullptr)
+            callback_status_changed(status);
         return 0;
     }
 
@@ -69,7 +70,8 @@ namespace grblconnector {
         if (serial != nullptr)
             serial->close();
         status = down;
-        callback_status_changed(status);
+        if (callback_status_changed != nullptr)
+            callback_status_changed(status);
         std::cout << "GTransceiver closed" << std::endl;
     }
 
@@ -132,7 +134,8 @@ namespace grblconnector {
         cline.clear();
         std::string to_send;
         status = active;
-        callback_status_changed(status);
+        if (callback_status_changed != nullptr)
+            callback_status_changed(status);
 
         // start thread for cyclic status requests
         int status_counter = 0;
@@ -185,7 +188,8 @@ namespace grblconnector {
         }
         io_run = false;
         status = down;
-        callback_status_changed(status);
+        if (callback_status_changed != nullptr)
+            callback_status_changed(status);
         std::cout << "SerialWorker stopped" << std::endl;
     }
 

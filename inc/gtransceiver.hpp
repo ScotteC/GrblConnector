@@ -32,10 +32,10 @@
 #include <mutex>
 #include <atomic>
 
-#include "eventpp/include/eventpp/callbacklist.h"
-#include "asyncserial/AsyncSerial.hpp"
 #include "gsender.hpp"
 #include "gparser.hpp"
+
+class CallbackAsyncSerial;
 
 namespace grblconnector {
 
@@ -51,11 +51,11 @@ namespace grblconnector {
         GTransceiver& operator=(GTransceiver&) = delete;
 
         void BindStatusChangedCallback(const std::function<void(STATUS)> &callback) {
-            callback_status_changed.append(callback);
+            callback_status_changed = callback;
         }
 
         void BindBufferEmptyCallback(const std::function<void()> &callback) {
-            callback_command_buffer_empty.append(callback);
+            callback_command_buffer_empty = callback;
         }
 
     private:
@@ -103,8 +103,9 @@ namespace grblconnector {
         std::thread io_thread{}, status_thread{};
         std::atomic<bool> io_run{}, io_clear{};
 
-        eventpp::CallbackList<void(STATUS)> callback_status_changed;
-        eventpp::CallbackList<void()> callback_command_buffer_empty;
+        std::function<void()> callback_command_buffer_empty{};
+        std::function<void(STATUS)> callback_status_changed{};
+
         bool command_buffer_empty_call_flag = true;
     };
 }

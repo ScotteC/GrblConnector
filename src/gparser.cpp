@@ -127,7 +127,8 @@ namespace grblconnector {
                 status.ovr_spindle = std::stoi(match[3]);
             }
 
-            callback_status(status);
+            if (callback_status != nullptr)
+                callback_status(status);
             return true;
         }
         return false;
@@ -199,7 +200,9 @@ namespace grblconnector {
                 modal.spindle_speed = std::stoi(match[1]);
             }
 
-            callback_modal(modal);
+            if (callback_modal != nullptr)
+                callback_modal(modal);
+
             return true;
         }
         return false;
@@ -220,7 +223,8 @@ namespace grblconnector {
     bool GParser::ParseAlarm(std::string &line) {
         boost::smatch match;
         if (boost::regex_match(line, match, boost::regex{"(?<=ALARM:)(\\d+)"})){
-            callback_alarm(std::stoi(match[1]), alarm.GetAlarmMessage(std::stoi(match[1])));
+            if (callback_alarm != nullptr)
+                callback_alarm(std::stoi(match[1]), alarm.GetAlarmMessage(std::stoi(match[1])));
             return true;
         }
         return false;
@@ -229,7 +233,8 @@ namespace grblconnector {
     bool GParser::ParseError(std::string &line) {
         boost::smatch match;
         if (boost::regex_match(line, match, boost::regex{"(?<=error:)(\\d+)"})){
-            callback_error(std::stoi(match[1]), error.GetErrorMessage(std::stoi(match[1])));
+            if (callback_error != nullptr)
+                callback_error(std::stoi(match[1]), error.GetErrorMessage(std::stoi(match[1])));
             return true;
         }
         return false;
@@ -238,7 +243,8 @@ namespace grblconnector {
     bool GParser::ParseMessage(std::string &line) {
         boost::smatch match;
         if (boost::regex_search(line, match, boost::regex{"\\[(MSG:)(.*)\\]"})) {
-            callback_message(match[1]);
+            if (callback_message != nullptr)
+                callback_message(match[2]);
             return true;
         }
         return false;
