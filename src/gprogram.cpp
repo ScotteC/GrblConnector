@@ -26,7 +26,9 @@
 
 #include <sstream>
 #include <iomanip>
+
 namespace grblconnector {
+
     GProgram::GProgram(std::list<std::string> &program) {
         Reset();
         this->program = program;
@@ -37,7 +39,7 @@ namespace grblconnector {
         program.clear();
     }
 
-    GProgram GProgram::SelectWcs(GModal::WCS wcs) {
+    GProgram GProgram::SetWcs(GModal::WCS wcs) {
         if (wcs != modal.wcs) {
             modal.wcs = wcs;
             program.push_back("G" + std::to_string(wcs));
@@ -60,6 +62,14 @@ namespace grblconnector {
         if (distance != modal.distance) {
             program.push_back("G" + std::to_string(distance));
             modal.distance = distance;
+        }
+        return *this;
+    }
+
+    GProgram GProgram::SetFeedMode(GModal::FEED feed) {
+        if (feed != modal.feed) {
+            program.push_back("G" + std::to_string(feed));
+            modal.feed = feed;
         }
         return *this;
     }
@@ -156,11 +166,13 @@ namespace grblconnector {
 
     GProgram GProgram::Pause() {
         program.emplace_back("M0");
+        modal.program = GModal::program_m0;
         return *this;
     }
 
     GProgram GProgram::End() {
         program.emplace_back("M2");
+        modal.program = GModal::program_m2;
         return *this;
     }
 
@@ -172,7 +184,7 @@ namespace grblconnector {
         return *this;
     }
 
-    GProgram GProgram::SelectPlane(GModal::PLANE plane) {
+    GProgram GProgram::SetPlane(GModal::PLANE plane) {
         if (plane != modal.plane) {
             program.emplace_back("G" + std::to_string(plane));
             modal.plane = plane;

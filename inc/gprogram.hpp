@@ -43,7 +43,11 @@ namespace grblconnector {
 
         void Reset();
 
-        GProgram SelectWcs(GModal::WCS wcs);
+        GProgram SetWcs(GModal::WCS wcs);
+
+        GModal::WCS GetWcs() const {
+            return this->modal.wcs;
+        }
 
         GProgram ConfigWcs(
                 GModal::WCS wcs,
@@ -51,9 +55,27 @@ namespace grblconnector {
 
         GProgram SetUnit(GModal::UNIT unit);
 
-        GProgram SelectPlane(GModal::PLANE plane);
+        GModal::UNIT GetUnit() const {
+            return this->modal.unit;
+        }
+
+        GProgram SetPlane(GModal::PLANE plane);
+
+        GModal::PLANE GetPlane() const {
+            return this->modal.plane;
+        }
 
         GProgram SetDistanceMode(GModal::DISTANCE distance);
+
+        GModal::DISTANCE GetDistance() const {
+            return this->modal.distance;
+        }
+
+        GProgram SetFeedMode(GModal::FEED feed);
+
+        GModal::FEED GetFeedMode() const {
+            return this->modal.feed;
+        }
 
         GProgram MoveRapid(
                 GModal::DISTANCE distance,
