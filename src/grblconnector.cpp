@@ -24,8 +24,6 @@
 
 #include "grblconnector.hpp"
 
-#include <iostream>
-
 namespace grblconnector {
 
     GrblConnector::GrblConnector() = default;

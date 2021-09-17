@@ -67,6 +67,9 @@ namespace grblconnector {
             if (f == 0)
                 return;
 
+            if(!gTransceiver.cline.empty())
+                return;
+
             std::stringstream cmd;
             cmd << std::setprecision(4) << std::fixed;
 
@@ -103,6 +106,7 @@ namespace grblconnector {
         }
 
         void RtJogCancel() {
+            gTransceiver.ClearBuffer();
             RealtimeCommand(static_cast<const char>(0x85));
         }
 

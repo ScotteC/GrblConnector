@@ -28,6 +28,8 @@
 #include <functional>
 #include <numeric>
 
+#include "asyncserial/AsyncSerial.hpp"
+
 namespace grblconnector {
 
     GTransceiver::GTransceiver(GParser& parser) : gParser(parser) {
@@ -42,7 +44,7 @@ namespace grblconnector {
 
     int GTransceiver::Connect(const std::string &device, unsigned int baudrate) {
         try {
-//            delete serial;
+            delete serial;
             this->serial = new CallbackAsyncSerial(device, baudrate);
             this->serial->flush();
             this->serial->setCallback([this](auto &&PH1, auto &&PH2) {
@@ -174,7 +176,8 @@ namespace grblconnector {
                 to_send.clear();
             }
 
-            if (command_buffer.empty() and command_buffer_empty_call_flag) {
+            if (callback_command_buffer_empty != nullptr
+                    and command_buffer.empty() and command_buffer_empty_call_flag) {
                 command_buffer_empty_call_flag = false;
                 callback_command_buffer_empty();
             }
