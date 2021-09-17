@@ -115,6 +115,10 @@ class GStatus {
     int buffer_rx{};
     int line_number{};
 
+    int tool_number{};
+    int spindle_speed{};
+    int feed_rate{};
+
   private:
 
 };
