@@ -30,13 +30,13 @@ namespace grblconnector {
     class GModal {
     public:
         enum DISTANCE {
-            distance_none,
+            distance_none = -1,
             distance_absolute = 90,
             distance_incremental = 91
         };
 
         enum WCS {
-            wcs_none,
+            wcs_none = -1,
             mcs = 53,
             wcs_1 = 54,
             wcs_2 = 55,
@@ -47,14 +47,14 @@ namespace grblconnector {
         };
 
         enum PLANE {
-            plane_none,
+            plane_none = -1,
             plane_xy = 17,
             plane_zx = 18,
             plane_yz = 19
         };
 
         enum MOTION {
-            motion_none,
+            motion_none = -1,
             motion_rapid = 0,
             motion_linear = 1,
             motion_arc_cw = 2,
@@ -74,13 +74,13 @@ namespace grblconnector {
         };
 
         enum UNIT {
-            unit_none,
+            unit_none = -1,
             unit_inch = 20,
             unit_mm = 21
         };
 
         enum PROGRAM {
-            program_none,
+            program_none = -1,
             program_m0 = 0,
             program_m1 = 1,
             program_m2 = 2,
@@ -88,7 +88,7 @@ namespace grblconnector {
         };
 
         enum FEED {
-            feed_none,
+            feed_none = -1,
             feed_inverse_time = 93,
             feed_units_per_minute = 94
         };
