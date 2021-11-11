@@ -41,7 +41,8 @@ namespace grblconnector {
 
     GProgram GProgram::SetWcs(GModal::WCS wcs) {
         if (wcs != modal.wcs) {
-            modal.wcs = wcs;
+            if (wcs != GModal::mcs)
+                modal.wcs = wcs;
             program.push_back("G" + std::to_string(wcs));
         }
         return *this;
