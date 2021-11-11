@@ -44,13 +44,13 @@ namespace grblconnector {
             return true;
         }
 
-        bool SendCommand(std::list<std::string> *cmd_list) override {
-            for (auto &cmd : *cmd_list)
+        bool SendCommand(std::list<std::string> cmd_list) override {
+            for (auto &cmd : cmd_list)
                 *stream << cmd << std::endl;
             return true;
         }
 
-        bool SendRealtimeCommand(const char cmd) override {
+        bool SendRealtimeCommand(char cmd) override {
             *stream << cmd << std::endl;
             return true;
         }
