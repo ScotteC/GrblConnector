@@ -28,20 +28,16 @@ namespace grblconnector {
 
     GrblConnector::GrblConnector() = default;
 
-    GrblConnector::~GrblConnector() {
-        Disconnect();
-    }
+    GrblConnector::~GrblConnector() = default;
 
     bool GrblConnector::Connect(const std::string &device, int baudrate) {
         if (gTransceiver.Connect(device, baudrate)) {
             return false;
         }
-        gCommand.GetGCodeState();
         return true;
     }
 
     void GrblConnector::Disconnect() {
-        gCommand.RtSoftReset();
         gTransceiver.Disconnect();
     }
 

@@ -25,7 +25,6 @@
 #include "gtransceiver.hpp"
 
 #include <iostream>
-#include <functional>
 #include <numeric>
 
 #include "asyncserial/AsyncSerial.hpp"
@@ -39,6 +38,7 @@ namespace grblconnector {
 
     GTransceiver::~GTransceiver() {
         Disconnect();
+
         delete serial;
     }
 
@@ -64,17 +64,35 @@ namespace grblconnector {
     }
 
     void GTransceiver::Disconnect() {
+        // clear buffer
+        ClearBuffer();
+        // reset GRBL if io_thread active
+        if (io_run) {
+            SendRealtimeCommand(static_cast<const char>(0x18));
+            // wait for reset to become active
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+        }
+
+        // stop and join status thread
+        io_status = false;
+        if (status_thread.joinable()) {
+            status_thread.join();
+        }
+
+        // stop and join transceiver thread
         io_run = false;
         if (io_thread.joinable()) {
-            std::cout << "Wait for SerialWorker..." << std::endl;
             io_thread.join();
         }
+        // close serial connection to GRBL
         if (serial != nullptr)
             serial->close();
         status = down;
+
         if (callback_status_changed != nullptr)
             callback_status_changed(status);
-        std::cout << "GTransceiver closed" << std::endl;
+    }
+
     int GTransceiver::SetStatusReportFrequency(float frequency) {
         if (frequency > 5.0 or frequency < 0)
             return 2;
@@ -211,7 +229,6 @@ namespace grblconnector {
         status = down;
         if (callback_status_changed != nullptr)
             callback_status_changed(status);
-        std::cout << "SerialWorker stopped" << std::endl;
     }
 
     void GTransceiver::IOReceive(const char *data, unsigned int len) {
