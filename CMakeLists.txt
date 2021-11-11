@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
-project(grblconnector VERSION 1.0.0 DESCRIPTION "Connector to GRBL")
+project(grblconnector VERSION 1.1.0 DESCRIPTION "Connector to GRBL")
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -65,6 +65,7 @@ install(
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
+
 install(FILES ${HEADERS_PUB}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
