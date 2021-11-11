@@ -50,15 +50,15 @@ namespace grblconnector {
             callback_modal = callback;
         }
 
-        void BindErrorCallback(const std::function<void(int, std::string)> &callback) {
+        void BindErrorCallback(const std::function<void(int, const std::string&)> &callback) {
             callback_error = callback;
         }
 
-        void BindAlarmCallback(const std::function<void(int, std::string)> &callback) {
+        void BindAlarmCallback(const std::function<void(const int, const std::string&)> &callback) {
             callback_alarm = callback;
         }
 
-        void BindMessageCallback(const std::function<void(std::string)> &callback) {
+        void BindMessageCallback(const std::function<void(const std::string&)> &callback) {
             callback_message = callback;
         }
 
@@ -91,9 +91,9 @@ namespace grblconnector {
 
         std::function<void(GStatus)> callback_status = nullptr;
         std::function<void(GModal)> callback_modal = nullptr;
-        std::function<void(int, std::string)> callback_error = nullptr;
-        std::function<void(int, std::string)> callback_alarm = nullptr;
-        std::function<void(std::string)> callback_message = nullptr;
+        std::function<void(const int, const std::string&)> callback_error = nullptr;
+        std::function<void(const int, const std::string&)> callback_alarm = nullptr;
+        std::function<void(const std::string&)> callback_message = nullptr;
     };
 }
 #endif // GRBL_INTERPRETER_HPP
