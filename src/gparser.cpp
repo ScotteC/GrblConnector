@@ -176,7 +176,7 @@ namespace grblconnector {
             }
 
             // spindle mode
-            if (boost::regex_search(line, match, boost::regex{R"(((?<=M)[345](?=[ \])))"})) {
+            if (boost::regex_search(line, match, boost::regex{R"(((?<=M)[345](?=[ \]])))"})) {
                 modal.spindle = static_cast<GModal::SPINDLE>(std::stoi(match[1]));
             }
 
