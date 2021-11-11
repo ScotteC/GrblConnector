@@ -58,6 +58,8 @@ namespace grblconnector {
             callback_command_buffer_empty = callback;
         }
 
+        int SetStatusReportFrequency(float frequency);
+
     private:
         friend class GrblConnector;
         friend class GCommand;
@@ -84,6 +86,8 @@ namespace grblconnector {
 
         void IOReceive(const char *data, unsigned int len);
 
+        void IOStatus();
+
         const int RX_BUFFER_SIZE = 128;
 
         STATUS status = down;
@@ -101,7 +105,9 @@ namespace grblconnector {
         std::string read_buffer{};
 
         std::thread io_thread{}, status_thread{};
-        std::atomic<bool> io_run{}, io_clear{};
+        std::atomic<bool> io_run{}, io_clear{}, io_status{};
+
+        std::atomic<float> status_frequency_ = 0.0;
 
         std::function<void()> callback_command_buffer_empty{};
         std::function<void(STATUS)> callback_status_changed{};

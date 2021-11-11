@@ -75,6 +75,29 @@ namespace grblconnector {
         if (callback_status_changed != nullptr)
             callback_status_changed(status);
         std::cout << "GTransceiver closed" << std::endl;
+    int GTransceiver::SetStatusReportFrequency(float frequency) {
+        if (frequency > 5.0 or frequency < 0)
+            return 2;
+
+        // update frequency
+        status_frequency_ = frequency;
+
+        // stop worker
+        if (frequency == 0){
+            io_status = false;
+            return 0;
+        }
+
+        io_status = true;
+
+        // worker is running, nothing to do
+        if (status_thread.joinable()) {
+            return 0;
+        }
+
+        // start worker
+        status_thread = std::thread(&GTransceiver::IOStatus, this);
+        return 0;
     }
 
     bool GTransceiver::SendCommand(std::string cmd) {
@@ -139,8 +162,8 @@ namespace grblconnector {
         if (callback_status_changed != nullptr)
             callback_status_changed(status);
 
-        // start thread for cyclic status requests
-        int status_counter = 0;
+        // Get GCodeState
+        serial->write("$G\n", 3);
 
         while (io_run and serial != nullptr and serial->isOpen() and !serial->errorStatus()) {
             //process realtime command buffer
@@ -182,11 +205,6 @@ namespace grblconnector {
                 callback_command_buffer_empty();
             }
 
-            if(!io_clear and --status_counter < 0) {
-                status_counter = 20000;
-                SendRealtimeCommand(static_cast<const char>(0x3f));
-            }
-
             std::this_thread::sleep_for(std::chrono::microseconds(10));
         }
         io_run = false;
@@ -219,6 +237,17 @@ namespace grblconnector {
             } else {
                 read_buffer += c;
             }
+        }
+    }
+
+    void GTransceiver::IOStatus() {
+        auto start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+        auto wait_until = std::chrono::system_clock::time_point(start) + std::chrono::milliseconds(500);
+
+        while(io_status) {
+            std::this_thread::sleep_until(wait_until);
+            wait_until += std::chrono::milliseconds((int)(1000 / status_frequency_));
+            SendRealtimeCommand(static_cast<const char>(0x3f));
         }
     }
 }
