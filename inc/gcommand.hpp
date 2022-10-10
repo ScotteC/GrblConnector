@@ -83,6 +83,31 @@ namespace grblconnector {
             Command(cmd.str());
         }
 
+        // commands altering modal state
+        void StartSpindleClockwise(std::list<std::string> *queue = nullptr) {
+            Command("M3", queue);
+        }
+
+        void StartSpindleCounterclockwise(std::list<std::string> *queue = nullptr) {
+            Command("M4", queue);
+        }
+
+        void StopSpindle(std::list<std::string> *queue = nullptr) {
+            Command("M5", queue);
+        }
+
+        void StartCoolantMist(std::list<std::string> *queue = nullptr) {
+            Command("M7", queue);
+        }
+
+        void StartCoolantFlood(std::list<std::string> *queue = nullptr) {
+            Command("M8", queue);
+        }
+
+        void StopCoolant(std::list<std::string> *queue = nullptr) {
+            Command("M9", queue);
+        }
+
         // Commands executed by realtime buffer
         void RtSoftReset() {
             gTransceiver.ClearBuffer();
