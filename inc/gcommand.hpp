@@ -61,10 +61,11 @@ namespace grblconnector {
 
 
         void Jog(GModal::DISTANCE distance,
-                 float x = 0.0, float y = 0.0, float z = 0.0,
+                 std::tuple<std::array<float, 3>, std::array<bool, 3>> xyz,
                  int f = 0,
                  bool mcs = false) {
-            if (f == 0)
+            if (f == 0 or
+                (!std::get<1>(xyz)[0] and !std::get<1>(xyz)[1] and !std::get<1>(xyz)[2]))
                 return;
 
             if(!gTransceiver.cline.empty())
@@ -78,7 +79,16 @@ namespace grblconnector {
             if (mcs)
                 cmd << " G53";
 
-            cmd << " X" << x << " Y" << y << " Z" << z << " F" << f;
+            if (std::get<1>(xyz)[0])
+                cmd << " X" << std::get<0>(xyz)[0];
+
+            if (std::get<1>(xyz)[1])
+                cmd << " Y" << std::get<0>(xyz)[1];
+
+            if (std::get<1>(xyz)[2])
+                cmd << " Z" << std::get<0>(xyz)[2];
+
+            cmd << " F" << f;
 
             Command(cmd.str());
         }
