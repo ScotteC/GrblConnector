@@ -120,6 +120,7 @@ namespace grblconnector {
 
         // Commands executed by realtime buffer
         void RtSoftReset() {
+            RealtimeCommand(static_cast<const char>(0x18));
             gTransceiver.ClearBuffer();
             RealtimeCommand(static_cast<const char>(0x18));
         }
