@@ -63,7 +63,7 @@ class GStatus {
             {"Home", Home},
             {"Sleep", Sleep}
     };
-    
+
     std::map<STATE, std::string> state_to_str = {
             {Idle, "Idle"},
             {Run, "Run"},
@@ -77,6 +77,14 @@ class GStatus {
             {Sleep, "Sleep"}
     };
 
+    enum REFERENCE_STATE {
+        Referenced,
+        Unreferenced,
+        Reference_Cycle_Issued
+    };
+
+    REFERENCE_STATE referenceState{};
+
     std::map<GModal::WCS, std::array<float, 3>> position = {
             {GModal::WCS::mcs, {0.0, 0.0, 0.0}},
             {GModal::WCS::wcs_1, { 0.0, 0.0, 0.0 }},
@@ -86,7 +94,7 @@ class GStatus {
             {GModal::WCS::wcs_5, { 0.0, 0.0, 0.0 }},
             {GModal::WCS::wcs_6, { 0.0, 0.0, 0.0 }},
     };
-    
+
     std::map<GModal::WCS, std::array<float, 3>> offset = {
             {GModal::WCS::wcs_1, {0.0, 0.0, 0.0}},
             {GModal::WCS::wcs_2, {0.0, 0.0, 0.0}},

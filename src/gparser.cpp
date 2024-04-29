@@ -64,6 +64,12 @@ namespace grblconnector {
             // machine status
             if (boost::regex_search(line, match, boost::regex{R"(((?<=\<)\w+:?[0-3]?(?=\|)))"})) {
                 status.state = status.str_to_state[match[1]];
+
+                // ToDo: needs testing: set reference state on first status message with state IDLE, only if ref_cylce_issued
+                if (status.referenceState == GStatus::REFERENCE_STATE::Reference_Cycle_Issued
+                        && status.str_to_state[match[1]] == GStatus::STATE::Idle) {
+                    status.referenceState = GStatus::REFERENCE_STATE::Referenced;
+                }
             }
 
             // machine position
@@ -223,8 +229,21 @@ namespace grblconnector {
     bool GParser::ParseAlarm(std::string &line) {
         boost::smatch match;
         if (boost::regex_search(line, match, boost::regex{R"((?<=ALARM:)(\d+))"})){
+            int ec = std::stoi(match[1]);
+            switch (ec) {
+                case 1:
+                case 3:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                    status.referenceState = GStatus::REFERENCE_STATE::Unreferenced;
+                    break;
+            }
+
             if (callback_alarm != nullptr)
-                callback_alarm(std::stoi(match[1]), alarm.GetAlarmMessage(std::stoi(match[1])));
+                callback_alarm(ec, alarm.GetAlarmMessage(ec));
             return true;
         }
         return false;

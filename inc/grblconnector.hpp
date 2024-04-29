@@ -58,7 +58,7 @@ namespace grblconnector {
 
         GParser gParser{status, modal, error, alarm};
         GTransceiver gTransceiver{gParser};
-        GCommand gCommand{gTransceiver};
+        GCommand gCommand{gTransceiver, status};
     };
 }
 
