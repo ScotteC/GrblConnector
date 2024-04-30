@@ -29,6 +29,7 @@
 #include "gstatus.hpp"
 #include "gerror.hpp"
 #include "galarm.hpp"
+#include "greference.hpp"
 
 #include <list>
 #include <map>
@@ -66,8 +67,8 @@ namespace grblconnector {
         friend class GrblConnector;
         friend class GTransceiver;
 
-        GParser(GStatus &status, GModal &modal, GError &error, GAlarm &alarm)
-        : status(status), modal(modal), error(error), alarm(alarm) {}
+        GParser(GStatus &status, GModal &modal, GError &error, GAlarm &alarm, GReference& reference)
+        : status(status), modal(modal), error(error), alarm(alarm), reference(reference) {}
 
         int ParseLine(std::string &line);
 
@@ -88,6 +89,7 @@ namespace grblconnector {
         GModal &modal;
         GError &error;
         GAlarm &alarm;
+        GReference &reference;
 
         std::function<void(GStatus)> callback_status = nullptr;
         std::function<void(GModal)> callback_modal = nullptr;

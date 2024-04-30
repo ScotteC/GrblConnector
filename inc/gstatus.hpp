@@ -77,14 +77,6 @@ class GStatus {
             {Sleep, "Sleep"}
     };
 
-    enum REFERENCE_STATE {
-        Referenced,
-        Unreferenced,
-        Reference_Cycle_Issued
-    };
-
-    REFERENCE_STATE referenceState{};
-
     std::map<GModal::WCS, std::array<float, 3>> position = {
             {GModal::WCS::mcs, {0.0, 0.0, 0.0}},
             {GModal::WCS::wcs_1, { 0.0, 0.0, 0.0 }},

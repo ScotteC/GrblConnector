@@ -39,7 +39,7 @@ namespace grblconnector {
     public:
         // Commands executed in program buffer
         void HomingCycle(std::list<std::string> *queue = nullptr) {
-            gStatus.referenceState = GStatus::REFERENCE_STATE::Reference_Cycle_Issued;
+            gReference.CycleIssued();
             Command("$H", queue);
         }
 
@@ -124,7 +124,7 @@ namespace grblconnector {
             RealtimeCommand(static_cast<const char>(0x18));
             gTransceiver.ClearBuffer();
             RealtimeCommand(static_cast<const char>(0x18));
-            gStatus.referenceState = GStatus::REFERENCE_STATE::Unreferenced;
+            gReference.Lost();
         }
 
         void RtStatusReport() {
@@ -183,8 +183,8 @@ namespace grblconnector {
     private:
         friend class GrblConnector;
 
-        explicit GCommand(GTransceiver &gTransceiver, GStatus& gStatus) :
-            gTransceiver(gTransceiver), gStatus(gStatus) {}
+        explicit GCommand(GTransceiver &gTransceiver, GReference& gReference) :
+            gTransceiver(gTransceiver), gReference(gReference) {}
 
         void Command(const std::string &cmd, std::list<std::string> *queue = nullptr) {
             if (queue != nullptr)
@@ -198,9 +198,8 @@ namespace grblconnector {
         }
 
         GTransceiver& gTransceiver;
-        GStatus& gStatus;
+        GReference& gReference;
     };
-
 }
 
 #endif // GRBL_GCOMMAND_HPP

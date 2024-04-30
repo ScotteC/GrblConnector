@@ -32,6 +32,7 @@
 #include "gparser.hpp"
 #include "gcommand.hpp"
 #include "gtransceiver.hpp"
+#include "greference.hpp"
 
 namespace grblconnector {
     class GrblConnector {
@@ -52,13 +53,14 @@ namespace grblconnector {
 
     public:
         GStatus status{};
+        GReference reference{};
         GModal modal{};
         GError error{};
         GAlarm alarm{};
 
-        GParser gParser{status, modal, error, alarm};
+        GParser gParser{status, modal, error, alarm, reference};
         GTransceiver gTransceiver{gParser};
-        GCommand gCommand{gTransceiver, status};
+        GCommand gCommand{gTransceiver, reference};
     };
 }
 

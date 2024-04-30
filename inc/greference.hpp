@@ -1,7 +1,7 @@
 /*********************************************************************************
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Fabian Schoettler
+ * Copyright (c) 2024 Fabian Schoettler
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,54 @@
  * SOFTWARE.
  ********************************************************************************/
 
-#ifndef GRBLCONNECTOR_GCON_HPP
-#define GRBLCONNECTOR_GCON_HPP
+#ifndef GRBL_GREFERENCE_HPP
+#define GRBL_GREFERENCE_HPP
 
-#include "grblconnector.hpp"
+#include <functional>
 
-#include "gtransceiver.hpp"
-#include "gdumper.hpp"
-#include "gparser.hpp"
+namespace grblconnector {
 
-#include "gcommand.hpp"
-#include "gprogram.hpp"
-#include "gstatus.hpp"
-#include "gmodal.hpp"
-#include "greference.hpp"
+    class GReference {
+    public:
+        enum class STATE {
+            Referenced,
+            Unreferenced,
+            Reference_Cycle_Issued
+        };
 
-#endif //GRBLCONNECTOR_GCON_HPP
+        void Bind(const std::function<void()>& callback) {
+            callback_ = callback;
+        }
+
+        void CycleIssued() {
+            Set(STATE::Reference_Cycle_Issued);
+        }
+
+        void Lost() {
+            Set(STATE::Unreferenced);
+        }
+
+        void TryFix() {
+            if (state_ == STATE::Reference_Cycle_Issued) {
+                Set(STATE::Referenced);
+            }
+        }
+
+        STATE Get() {
+            return state_;
+        }
+
+    private:
+        GReference::STATE state_{STATE::Unreferenced};
+        std::function<void()> callback_ = nullptr;
+
+        void Set(STATE state) {
+            state_ = state;
+            if (callback_ != nullptr) {
+                callback_();
+            }
+        }
+    };
+}
+
+#endif // GRBL_GREFERENCE_HPP

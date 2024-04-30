@@ -65,10 +65,8 @@ namespace grblconnector {
             if (boost::regex_search(line, match, boost::regex{R"(((?<=\<)\w+:?[0-3]?(?=\|)))"})) {
                 status.state = status.str_to_state[match[1]];
 
-                // ToDo: needs testing: set reference state on first status message with state IDLE, only if ref_cylce_issued
-                if (status.referenceState == GStatus::REFERENCE_STATE::Reference_Cycle_Issued
-                        && status.str_to_state[match[1]] == GStatus::STATE::Idle) {
-                    status.referenceState = GStatus::REFERENCE_STATE::Referenced;
+                if (status.str_to_state[match[1]] == GStatus::STATE::Idle) {
+                    reference.TryFix();
                 }
             }
 
@@ -238,7 +236,7 @@ namespace grblconnector {
                 case 8:
                 case 9:
                 case 10:
-                    status.referenceState = GStatus::REFERENCE_STATE::Unreferenced;
+                    reference.Lost();
                     break;
             }
 
